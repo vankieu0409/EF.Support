@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageId>Bau.EF.Support</PackageId>
+    <Authors>NguyenKieu</Authors>
+    <Company>NguyenKieu</Company>
+    <Product>EF.Support</Product>
+    <Description>I made it myself for I use with EntityFrameworkCore!</Description>
+    <Copyright>2022 NguyenKieu</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Repository\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.10" />
+  </ItemGroup>
+
+</Project>
