@@ -8,13 +8,27 @@
     <Authors>NguyenKieu</Authors>
     <Company>NguyenKieu</Company>
     <Product>EF.Support</Product>
-    <Description>I made it myself for I use with EntityFrameworkCore!</Description>
+    <Description>I made it myself for I use with EntityFrameworkCore!
+
+This nuget is used to shorten CRUD methods when using EntityFramworkCore_CodeFirt with Repositotry Pattern</Description>
     <Copyright>2022 NguyenKieu</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon></PackageIcon>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Repository\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
