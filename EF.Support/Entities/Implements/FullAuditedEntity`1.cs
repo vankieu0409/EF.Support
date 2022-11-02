@@ -14,8 +14,6 @@ public class FullAuditedEntity<TKey> :
     IEntity<TKey>,
     IEntity
 {
-    [Key]
-    [Column(Order = 0)]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public TKey Id { get; protected set; }
+    [Key, Column(Order = 0), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public TKey Id { get; set; }
 }

@@ -3,30 +3,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EF.Support.Repository;
 
-public interface IRepository<TEntity>: IDisposable where TEntity : class, IEntity
+public interface IRepository<TDbContext,TEntity>:IDisposable
+where TEntity : class, new ()
+where TDbContext : DbContext, new ()
 {
 
     DbSet<TEntity> Entities { get; set; }
 
-    Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
+    TEntity Add(TEntity entity);
 
-    Task<IEnumerable<TEntity>> AddRangeAsync(
-        IEnumerable<TEntity> entities,
-        CancellationToken cancellationToken = default(CancellationToken));
+    IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities);
 
-    Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
+    TEntity Update(TEntity entity);
 
-    Task<IEnumerable<TEntity>> UpdateRangeAsync(
-        IEnumerable<TEntity> entities,
-        CancellationToken cancellationToken = default(CancellationToken));
+    IEnumerable<TEntity> UpdateRange(IEnumerable<TEntity> entities);
 
-    Task<TEntity> RemoveAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
+    TEntity Remove(TEntity entity);
 
-    Task<IEnumerable<TEntity>> RemoveRangeAsync(
-        IEnumerable<TEntity> entities,
-        CancellationToken cancellationToken = default(CancellationToken));
+    IEnumerable<TEntity> RemoveRange(IEnumerable<TEntity> entities);
 
     IQueryable<TEntity> AsQueryable();
 
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
+    int SaveChanges();
 }

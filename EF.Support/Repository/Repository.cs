@@ -1,21 +1,100 @@
 ﻿using EF.Support.Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using EF.Support.Entities.Interfaces.Audited;
+using System.Collections.ObjectModel;
 
 namespace EF.Support.Repository;
 
-public class Repository<TEntity> : RepositoryBase<TEntity> where TEntity : class, IEntity
+public class Repository<TDbContext, TEntity>:IRepository<TDbContext, TEntity>,IDisposable,IEntity
+    where TEntity : class, new()
+    where TDbContext : DbContext, new()
 {
-    private readonly DbContext _primaryDbContext;
-    private readonly DbContext _readOnlyDbContext;
+    private readonly TDbContext _dbContext;
 
-    public Repository(DbContext primaryDbContext, DbContext readOnlyDbContext) : base(primaryDbContext)
+    public DbSet<TEntity> Entities { get; set; }
+
+    public Repository()
     {
-        this._primaryDbContext = primaryDbContext ?? throw new ArgumentNullException(nameof(primaryDbContext));
-        this._readOnlyDbContext = readOnlyDbContext ?? throw new ArgumentNullException(nameof(readOnlyDbContext));
+        this._dbContext = new TDbContext();
+        this.Entities = this._dbContext.Set<TEntity>();
     }
 
-    public override IQueryable<TEntity> AsQueryable() => (IQueryable<TEntity>)this._readOnlyDbContext.Set<TEntity>();
+    public TEntity Add(TEntity entity)
+    {
+        this.PreSaveChange(entity);
+        return this.Entities.Add(entity).Entity;
+    }
+
+    public IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities)
+    {
+        Collection<TEntity> resullt = new Collection<TEntity>();
+        foreach (var entity in entities)
+        {
+            Collection<TEntity> collection = resullt;
+            collection.Add( this.Add(entity));
+            collection = (Collection<TEntity>)null;
+        }
+
+        IEnumerable<TEntity> entityColletion = (IEnumerable<TEntity>)resullt;
+        return entityColletion;
+    }
+
+    public TEntity Update(TEntity entity)
+    {
+        this.PreSaveChange(entity);
+        return this.Entities.Update(entity).Entity;
+    }
+
+    public IEnumerable<TEntity> UpdateRange(IEnumerable<TEntity> entities)
+    {
+        Collection<TEntity> result = new Collection<TEntity>();
+        foreach (TEntity entity in entities)
+        {
+            Collection<TEntity> collection = result;
+            collection.Add(this.Update(entity));
+            collection = (Collection<TEntity>)null;
+        }
+        IEnumerable<TEntity> entityCollection = (IEnumerable<TEntity>)result;
+        result = (Collection<TEntity>)null;
+        return entityCollection;
+    }
+
+    public TEntity Remove(TEntity entity)
+    {
+        if (!this.IsInheritsFrom(typeof(TEntity), typeof(IDeletionAuditedEntity)))
+            return this.Entities.Remove(entity).Entity;
+        PropertyInfo property = entity.GetType().GetProperty("IsDeleted");
+        property.SetValue((object)entity, Convert.ChangeType((object)true, property.PropertyType), (object[])null);
+        return  this.Update(entity);
+    }
+
+    public IEnumerable<TEntity> RemoveRange(IEnumerable<TEntity> entities)
+    {
+        if (this.IsInheritsFrom(typeof(TEntity), typeof(IDeletionAuditedEntity)))
+        {
+            IEnumerable<TEntity> removedEntities = entities.Select<TEntity, TEntity>((Func<TEntity, TEntity>)(entity =>
+            {
+                PropertyInfo property = entity.GetType().GetProperty("IsDeleted");
+                property.SetValue((object)entity, Convert.ChangeType((object)true, property.PropertyType), (object[])null);
+                return entity;
+            }));
+            IEnumerable<TEntity> entities1 = this.UpdateRange(removedEntities);
+            return removedEntities;
+        }
+        this.Entities.RemoveRange(entities);
+        return entities;
+    }
+
+    public virtual IQueryable<TEntity> AsQueryable() => (IQueryable<TEntity>)this._dbContext.Set<TEntity>();
+
+    public int SaveChanges() => this._dbContext.SaveChanges();
+
+    public void Dispose()
+    {
+        this._dbContext?.Dispose();
+        GC.SuppressFinalize((object)this);
+    }
 
     private void PreSaveChange(TEntity entity)
     {

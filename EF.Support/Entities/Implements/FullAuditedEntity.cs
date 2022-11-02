@@ -11,11 +11,11 @@ public class FullAuditedEntity :
     IDeletionAuditedEntity,
     IEntity
 {
-    public DateTimeOffset CreatedTime { get; }
-    public Guid? CreatedBy { get; }
-    public DateTimeOffset ModifiedTime { get; }
-    public Guid? ModifiedBy { get; }
-    public bool IsDeleted { get; }
-    public Guid? DeletedBy { get; }
-    public DateTimeOffset DeletedTime { get; }
+    public DateTimeOffset CreatedTime { get; set; }
+    public Guid? CreatedBy { get; set; }
+    public DateTimeOffset ModifiedTime { get; set; }
+    public Guid? ModifiedBy { get; set; }
+    public bool IsDeleted { get; set; }
+    public Guid? DeletedBy { get; set; }
+    public DateTimeOffset DeletedTime { get; set; }
 }

@@ -1,23 +1,46 @@
 ﻿using EF.Support.Entities.Interfaces.Audited;
 using EF.Support.Entities.Interfaces;
+using EF.Support.RepositoryAsync;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace EF.Support.Repository;
+namespace EF.Support.RepositoryAsync;
 
-public class RepositoryBase<TEntity> : IRepository<TEntity>, IDisposable
-    where TEntity : class, IEntity
+public class RepositoryBaseAsync<TEntity> : IRepositoryAsync<TEntity>, IDisposable where TEntity : class, IEntity
 {
     private readonly DbContext _dbContext;
 
     public DbSet<TEntity> Entities { get; set; }
 
-    public RepositoryBase(DbContext dbContext)
+    public RepositoryBaseAsync(DbContext dbContext)
     {
+        //if (dbContext == null)
+        //{
+        //    DbContext local1 = dbContext; throw new ArgumentNullException("dbContext");
+        //}
+        //this._dbContext = dbContext;
+        //this.Entities = this._dbContext.Set<TEntity>();
         this._dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         this.Entities = this._dbContext.Set<TEntity>();
     }
+
+    //[AsyncStateMachine((Type)typeof(<AddAsync >d__6))]
+    //public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = new CancellationToken())
+    //{
+    //    < AddAsync > d__6<TEntity> d__;
+    //    d__.<> t__builder = AsyncTaskMethodBuilder<TEntity>.Create();
+    //    d__.<> 4__this = (RepositoryBase<TEntity>)this;
+    //    d__.entity = entity;
+    //    d__.cancellationToken = cancellationToken;
+    //    d__.<> 1__state = -1;
+    //    d__.<> t__builder.Start << AddAsync > d__6 < TEntity >> (ref d__);
+    //    return d__.<> t__builder.get_Task();
+    //}
 
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
     {
