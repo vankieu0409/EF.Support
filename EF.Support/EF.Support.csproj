@@ -21,10 +21,6 @@ This nuget is used to shorten CRUD methods when using EntityFramworkCore_CodeFir
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Abstraction\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
