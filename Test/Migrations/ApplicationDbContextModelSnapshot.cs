@@ -17,17 +17,16 @@ namespace Test.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.10")
+                .HasAnnotation("ProductVersion", "8.0.19")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Test.Entity.NguyenEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnOrder(0);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -42,20 +41,21 @@ namespace Test.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnOrder(0);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                        .HasPrecision(0)
+                        .HasColumnType("datetimeoffset(0)");
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("DeletedTime")
-                        .HasColumnType("datetimeoffset");
+                        .HasPrecision(0)
+                        .HasColumnType("datetimeoffset(0)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -64,7 +64,8 @@ namespace Test.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("ModifiedTime")
-                        .HasColumnType("datetimeoffset");
+                        .HasPrecision(0)
+                        .HasColumnType("datetimeoffset(0)");
 
                     b.Property<string>("Name")
                         .IsRequired()

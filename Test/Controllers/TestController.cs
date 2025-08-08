@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using EF.Support.RepositoryAsync;
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
+
 using Test.Entity;
-using Test.Repository;
 
 namespace Test.Controllers
 {
@@ -10,30 +10,39 @@ namespace Test.Controllers
     [ApiController]
     public class TestController : ControllerBase
     {
-        private readonly INguyenEntityRepository _entityRepository;
-        private readonly IFullAuditedEntityRepository _fullAuditedEntityRepository;
+        private readonly IRepositoryAsync<NguyenEntity> _nguyenRepository;
+        private readonly IRepositoryAsync<Testtiep> _fullAuditedEntityRepository;
 
-        public TestController(INguyenEntityRepository entityRepository, IFullAuditedEntityRepository fullAuditedEntityRepository)
+        public TestController(IRepositoryAsync<NguyenEntity> nguyenRepository, IRepositoryAsync<Testtiep> fullAuditedEntityRepository)
         {
-            _entityRepository = entityRepository ?? throw new ArgumentNullException(nameof(entityRepository));
+            _nguyenRepository = nguyenRepository ?? throw new ArgumentNullException(nameof(nguyenRepository));
             _fullAuditedEntityRepository = fullAuditedEntityRepository ?? throw new ArgumentNullException(nameof(fullAuditedEntityRepository));
         }
 
         [HttpGet]
         public IActionResult GetAsync()
         {
-            var a = _entityRepository.AsQueryable().ToList();
-            return Ok(a);
+            try
+            {
+                var a = _nguyenRepository.AsNoTrackingQueryable().ToList();
+                return Ok(a);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
         }
 
         [HttpPost]
-        public async  Task<IActionResult> PostAsync(NguyenEntity tesst)
+        public async Task<IActionResult> PostAsync(NguyenEntity tesst)
         {
-             await _entityRepository.AddAsync(tesst);
-            await _entityRepository.SaveChangesAsync();
+            await _nguyenRepository.AddAsync(tesst);
+            await _nguyenRepository.SaveChangesAsync();
             return Ok(" Thêm thành công");
-        }    
-        
+        }
+
         [HttpGet("Full")]
         public IActionResult GetFullAsync()
         {
@@ -45,8 +54,8 @@ namespace Test.Controllers
         public IActionResult PostFullAsync(Testtiep tesst)
         {
             tesst.Id = Guid.NewGuid();
-            _fullAuditedEntityRepository.Add(tesst);
-            _fullAuditedEntityRepository.SaveChanges();
+            _fullAuditedEntityRepository.AddAsync(tesst);
+            _fullAuditedEntityRepository.SaveChangesAsync();
             return Ok(" Thêm thành công");
         }
     }

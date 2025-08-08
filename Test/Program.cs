@@ -1,19 +1,44 @@
+﻿using EF.Support.Infrastructure;
+using EF.Support.RepositoryAsync;
+
 using Microsoft.EntityFrameworkCore;
+
+using System.Security.Claims;
+
 using Test;
-using Test.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
+//builder.Services.AddScoped<AuditSaveChangesInterceptor>(sp =>
+//{
+//    var accessor = sp.GetRequiredService<IHttpContextAccessor>();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+//    return new AuditSaveChangesInterceptor(() =>
+//    {
+//        var user = accessor.HttpContext?.User;
+//        if (user?.Identity?.IsAuthenticated != true) return (Guid?)null;
 
-builder.Services.AddTransient<INguyenEntityRepository, NguyenEntityRepository>();
-builder.Services.AddTransient<IFullAuditedEntityRepository, FullAuditedEntityRepository>();
+//        // Ưu tiên các claim thường gặp
+//        var idStr = user.FindFirstValue(ClaimTypes.NameIdentifier)
+//                    ?? user.FindFirstValue("sub")
+//                    ?? user.FindFirstValue("uid");
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+//        return Guid.TryParse(idStr, out var id) ? id : (Guid?)null;
+//    });
+//});
+builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
+   // options.AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>());
+});
+builder.Services.AddScoped<DbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
+builder.Services.AddScoped(typeof(EF.Support.Repository.IRepository<,>), typeof(EF.Support.Repository.Repository<,>));
+builder.Services.AddScoped(typeof(EF.Support.UnitOfWork.IUnitOfWork<>), typeof(EF.Support.UnitOfWork.UnitOfWork<>));
+builder.Services.AddScoped(typeof(IRepositoryAsync<>), typeof(SingleDbRepositoryAsync<>));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

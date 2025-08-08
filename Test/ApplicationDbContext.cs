@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using EF.Support.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Test.Entity;
 
@@ -21,7 +22,7 @@ public class ApplicationDbContext : DbContext
     {
         base.OnConfiguring(optionsBuilder);
         optionsBuilder.LogTo(Console.WriteLine);
-        optionsBuilder.UseSqlServer("Data Source=DESKTOP-NVB7S6L; Initial Catalog=sdfghjkdfghjdfgh;Persist Security Info=True;User ID=kieu96;Password=123");
+       // optionsBuilder.UseSqlServer("Data Source=DESKTOP-2FLV48L; Initial Catalog=sdfghjkdfghjdfgh;Persist Security Info=True;User ID=kieu96;Password=123");
     }
 
     public DbSet<NguyenEntity> NguyenEntities { get; set; }
@@ -29,6 +30,9 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplySoftDeleteGlobalFilter();
+        modelBuilder.ApplyAuditPrecision();
+
         modelBuilder.Entity<NguyenEntity>().ToTable("NGUYEN");
         modelBuilder.Entity<NguyenEntity>(entity => { entity.HasKey(c => c.Id); });
 

@@ -110,3 +110,6 @@ public class OrderService
 - Soft-delete filter hides deleted rows globally; use `IgnoreQueryFilters()` for administrative scenarios.
 - Read/Write split can observe replication lag; use primary context for strict consistency or enforce read-after-write via transaction or retry.
 - Precision is set to seconds for audit timestamps to match DB defaults and avoid spurious updates.
+
+## Tài liệu chi tiết RepositoryAsync
+- Xem hướng dẫn chi tiết về RepositoryAsync và SingleDbRepositoryAsync: `docs/RepositoryAsync.md`
