@@ -2,8 +2,6 @@
 
 public interface IModificationAuditedEntity
 {
-
-    DateTimeOffset ModifiedTime { get; }
-
-    Guid? ModifiedBy { get; }
+    DateTimeOffset ModifiedTime { get; set; }
+    Guid? ModifiedBy { get; set; }
 }

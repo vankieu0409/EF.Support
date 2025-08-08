@@ -2,9 +2,7 @@
 
 public interface IDeletionAuditedEntity
 {
-    bool IsDeleted { get; }
-
-    Guid? DeletedBy { get; }
-
-    DateTimeOffset DeletedTime { get; }
+    bool IsDeleted { get; set; }
+    Guid? DeletedBy { get; set; }
+    DateTimeOffset DeletedTime { get; set; }
 }

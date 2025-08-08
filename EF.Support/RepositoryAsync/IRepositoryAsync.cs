@@ -3,30 +3,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EF.Support.RepositoryAsync;
 
-public interface IRepositoryAsync<TEntity>: IDisposable where TEntity : class, IEntity
+public interface IRepositoryAsync<TEntity> : IDisposable where TEntity : class, IEntity
 {
+    DbSet<TEntity> Entities { get; }
 
-    DbSet<TEntity> Entities { get; set; }
+    Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
 
-    Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
+    Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<TEntity>> AddRangeAsync(
-        IEnumerable<TEntity> entities,
-        CancellationToken cancellationToken = default(CancellationToken));
-
-    Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
-
-    Task<IEnumerable<TEntity>> UpdateRangeAsync(
-        IEnumerable<TEntity> entities,
-        CancellationToken cancellationToken = default(CancellationToken));
-
-    Task<TEntity> RemoveAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
-
-    Task<IEnumerable<TEntity>> RemoveRangeAsync(
-        IEnumerable<TEntity> entities,
-        CancellationToken cancellationToken = default(CancellationToken));
+    Task<TEntity> RemoveAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task RemoveRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
 
     IQueryable<TEntity> AsQueryable();
+    IQueryable<TEntity> AsNoTrackingQueryable();
 
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

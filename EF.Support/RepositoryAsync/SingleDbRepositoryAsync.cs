@@ -1,23 +1,19 @@
-﻿using EF.Support.Entities.Interfaces;
+using EF.Support.Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace EF.Support.RepositoryAsync;
 
-public class RepositoryAsync<TEntity> : IRepositoryAsync<TEntity>, IDisposable where TEntity : class, IEntity
+public class SingleDbRepositoryAsync<TEntity> : IRepositoryAsync<TEntity>, IDisposable where TEntity : class, IEntity
 {
-    private readonly DbContext _primaryDbContext;
-    private readonly DbContext _readOnlyDbContext;
+    private readonly DbContext _dbContext;
 
     public DbSet<TEntity> Entities { get; }
 
-    public RepositoryAsync(DbContext primaryDbContext, DbContext readOnlyDbContext)
+    public SingleDbRepositoryAsync(DbContext dbContext)
     {
-        _primaryDbContext = primaryDbContext ?? throw new ArgumentNullException(nameof(primaryDbContext));
-        _readOnlyDbContext = readOnlyDbContext ?? throw new ArgumentNullException(nameof(readOnlyDbContext));
-        Entities = _primaryDbContext.Set<TEntity>();
+        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        Entities = _dbContext.Set<TEntity>();
     }
-
-    public RepositoryAsync(DbContext dbContext) : this(dbContext, dbContext) { }
 
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
         => (await Entities.AddAsync(entity, cancellationToken)).Entity;
@@ -43,17 +39,16 @@ public class RepositoryAsync<TEntity> : IRepositoryAsync<TEntity>, IDisposable w
         return Task.CompletedTask;
     }
 
-    public virtual IQueryable<TEntity> AsQueryable() => (_readOnlyDbContext ?? _primaryDbContext).Set<TEntity>();
+    public IQueryable<TEntity> AsQueryable() => _dbContext.Set<TEntity>();
 
-    public virtual IQueryable<TEntity> AsNoTrackingQueryable() => AsQueryable().AsNoTracking();
+    public IQueryable<TEntity> AsNoTrackingQueryable() => _dbContext.Set<TEntity>().AsNoTracking();
 
-    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => _primaryDbContext.SaveChangesAsync(cancellationToken);
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        => _dbContext.SaveChangesAsync(cancellationToken);
 
     public void Dispose()
     {
-        _primaryDbContext?.Dispose();
-        if (!ReferenceEquals(_primaryDbContext, _readOnlyDbContext))
-            _readOnlyDbContext?.Dispose();
+        _dbContext?.Dispose();
         GC.SuppressFinalize(this);
     }
 }

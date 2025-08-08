@@ -2,6 +2,6 @@
 
 public interface ICreationAuditedEntity
 {
-    DateTimeOffset CreatedTime { get; }
-    Guid? CreatedBy { get; }
+    DateTimeOffset CreatedTime { get; set; }
+    Guid? CreatedBy { get; set; }
 }

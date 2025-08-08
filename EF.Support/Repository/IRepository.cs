@@ -3,26 +3,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EF.Support.Repository;
 
-public interface IRepository<TDbContext,TEntity>:IDisposable
-where TEntity : class, new ()
-where TDbContext : DbContext, new ()
+public interface IRepository<TDbContext, TEntity> : IDisposable
+    where TEntity : class, IEntity
+    where TDbContext : DbContext
 {
-
-    DbSet<TEntity> Entities { get; set; }
+    DbSet<TEntity> Entities { get; }
 
     TEntity Add(TEntity entity);
-
-    IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities);
+    void AddRange(IEnumerable<TEntity> entities);
 
     TEntity Update(TEntity entity);
-
-    IEnumerable<TEntity> UpdateRange(IEnumerable<TEntity> entities);
+    void UpdateRange(IEnumerable<TEntity> entities);
 
     TEntity Remove(TEntity entity);
-
-    IEnumerable<TEntity> RemoveRange(IEnumerable<TEntity> entities);
+    void RemoveRange(IEnumerable<TEntity> entities);
 
     IQueryable<TEntity> AsQueryable();
+    IQueryable<TEntity> AsNoTrackingQueryable();
 
     int SaveChanges();
 }
